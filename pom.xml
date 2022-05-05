@@ -140,7 +140,28 @@
     <osgi.dynamicImport>*</osgi.dynamicImport>
     <spotbugs.onlyAnalyze>org.apache.ibatis.*</spotbugs.onlyAnalyze>
     <project.build.outputTimestamp>1645112687</project.build.outputTimestamp>
+    <r2dbc-bom.version>Borca-SR1</r2dbc-bom.version>
+    <reactor-bom.version>2020.0.18</reactor-bom.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.projectreactor</groupId>
+        <artifactId>reactor-bom</artifactId>
+        <version>${reactor-bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.r2dbc</groupId>
+        <artifactId>r2dbc-bom</artifactId>
+        <version>${r2dbc-bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -293,6 +314,26 @@
       <version>2.17.2</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- reactive dependencies-->
+    <dependency>
+      <groupId>io.r2dbc</groupId>
+      <artifactId>r2dbc-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.r2dbc</groupId>
+      <artifactId>r2dbc-pool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.r2dbc</groupId>
+      <artifactId>r2dbc-proxy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>1.12.8</version>
+    </dependency>
+
   </dependencies>
 
   <build>
