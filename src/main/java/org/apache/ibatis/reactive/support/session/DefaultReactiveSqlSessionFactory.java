@@ -2,10 +2,7 @@ package org.apache.ibatis.reactive.support.session;
 
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.IsolationLevel;
-import io.r2dbc.spi.Option;
-import io.r2dbc.spi.TransactionDefinition;
 import org.apache.ibatis.reactive.support.ReactiveConfiguration;
-import reactor.core.publisher.Mono;
 
 public class DefaultReactiveSqlSessionFactory implements ReactiveSqlSessionFactory {
 
@@ -15,7 +12,17 @@ public class DefaultReactiveSqlSessionFactory implements ReactiveSqlSessionFacto
 
   @Override
   public ReactiveSqlSession openSession() {
-    return null;
+    return openSession(false);
+  }
+
+  @Override
+  public ReactiveSqlSession openSession(Boolean autoCommit) {
+    return openSession(IsolationLevel.READ_COMMITTED, autoCommit);
+  }
+
+  @Override
+  public ReactiveSqlSession openSession(IsolationLevel isolationLevel, Boolean autoCommit) {
+    return new DefaultReactiveSqlSession(configuration, isolationLevel, autoCommit);
   }
 
   @Override
