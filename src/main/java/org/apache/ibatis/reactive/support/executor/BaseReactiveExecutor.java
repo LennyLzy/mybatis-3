@@ -165,4 +165,8 @@ public abstract class BaseReactiveExecutor implements ReactiveExecutor {
       .onErrorResume(e -> Mono.from(connection.close()));
   }
 
+  public ReactiveConfiguration getConfiguration() {
+    return configuration;
+  }
+
 }

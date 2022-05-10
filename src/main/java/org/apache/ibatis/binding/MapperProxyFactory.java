@@ -20,7 +20,9 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.sun.deploy.net.proxy.ProxyUtils;
 import org.apache.ibatis.binding.MapperProxy.MapperMethodInvoker;
+import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
 import org.apache.ibatis.session.SqlSession;
 
 /**

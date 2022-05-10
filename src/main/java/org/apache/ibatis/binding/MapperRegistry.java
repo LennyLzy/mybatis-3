@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.ibatis.builder.annotation.MapperAnnotationBuilder;
 import org.apache.ibatis.io.ResolverUtil;
+import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 

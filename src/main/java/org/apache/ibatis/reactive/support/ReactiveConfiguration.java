@@ -2,10 +2,16 @@ package org.apache.ibatis.reactive.support;
 
 import io.r2dbc.spi.ConnectionFactory;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.plugin.InterceptorChain;
+import org.apache.ibatis.reactive.support.binding.SqlSessionProxy;
 import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLog;
 import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLogFactory;
 import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSession;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 
 
 public class ReactiveConfiguration extends Configuration {
@@ -35,7 +41,21 @@ public class ReactiveConfiguration extends Configuration {
   }
 
   public <T> T getMapper(Class<T> type, ReactiveSqlSession sqlSession) {
-//    return super.getMapper(type, sqlSession);
+    SqlSession sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(SqlSession.class.getClassLoader(), new Class[]{SqlSession.class}, new SqlSessionProxy(sqlSession));
+    return super.getMapper(type, sqlSessionProxy);
+  }
+
+  public InterceptorChain getInterceptorChain(){
+    try {
+      Field field = Configuration.class.getDeclaredField("interceptorChain");
+      InterceptorChain interceptorChain = (InterceptorChain) field.get(this.configuration);
+      return interceptorChain;
+    } catch (NoSuchFieldException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
 }
