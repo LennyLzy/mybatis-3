@@ -61,9 +61,10 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
           .checkpoint("SQL: \"" + boundSql + "\" [DefaultReactiveExecutor]")
           .concatMap(result -> result.map((row, rowMetadata) -> {
             RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, getConfiguration());
-            return (List<T>) reactiveResultHandler.handleResult(rowResultWrapper);
-          }))
-          .concatMap(resultList -> Flux.fromStream(resultList.stream().filter(Objects::nonNull)))
+//            return (List<T>) reactiveResultHandler.handleResult(rowResultWrapper);
+            return rowResultWrapper;
+          }));
+//          .concatMap(resultList -> Flux.fromStream(resultList.stream().filter(Objects::nonNull)))
 //          .filter(data -> !Objects.equals(data, DEFERRED))
 //          .doOnComplete(() -> r2dbcStatementLog.logTotal(reactiveResultHandler.getResultRowTotalCount()));
       });
