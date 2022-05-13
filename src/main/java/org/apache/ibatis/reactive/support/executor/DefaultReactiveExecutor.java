@@ -2,6 +2,7 @@ package org.apache.ibatis.reactive.support.executor;
 
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.IsolationLevel;
+import io.r2dbc.spi.Result;
 import io.r2dbc.spi.Statement;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -11,6 +12,7 @@ import org.apache.ibatis.reactive.support.ProxyInstanceFactory;
 import org.apache.ibatis.reactive.support.ReactiveConfiguration;
 import org.apache.ibatis.reactive.support.executor.parameter.PreparedReactiveStatement;
 import org.apache.ibatis.reactive.support.executor.result.RowResultWrapper;
+import org.apache.ibatis.reactive.support.executor.resultset.R2dbcResultSetsHandler;
 import org.apache.ibatis.reactive.support.executor.support.ReactiveExecutorContext;
 import org.apache.ibatis.reactive.support.session.MybatisReactiveContextManager;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
@@ -57,13 +59,16 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
         DefaultParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameter, boundSql);
         parameterHandler.setParameters(preparedStatement);
         statement = intercept(statement);
+        R2dbcResultSetsHandler resultSetsHandler = new R2dbcResultSetsHandler(getConfiguration(), mappedStatement);
         return Flux.from(statement.execute())
           .checkpoint("SQL: \"" + boundSql + "\" [DefaultReactiveExecutor]")
-          .concatMap(result -> result.map((row, rowMetadata) -> {
-            RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, getConfiguration());
-//            return (List<T>) reactiveResultHandler.handleResult(rowResultWrapper);
-            return rowResultWrapper;
-          }));
+          .concatMap(result -> resultSetsHandler.handleResultSet(result)
+//              result.map((row, rowMetadata) -> {
+//            RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, getConfiguration());
+////            return (List<T>) reactiveResultHandler.handleResult(rowResultWrapper);
+//            return rowResultWrapper;
+//          })
+          );
 //          .concatMap(resultList -> Flux.fromStream(resultList.stream().filter(Objects::nonNull)))
 //          .filter(data -> !Objects.equals(data, DEFERRED))
 //          .doOnComplete(() -> r2dbcStatementLog.logTotal(reactiveResultHandler.getResultRowTotalCount()));
@@ -77,7 +82,7 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
     );
   }
 
-  private Statement intercept(Statement statement){
+  private Statement intercept(Statement statement) {
     ReactiveConfiguration configuration = getConfiguration();
     return (Statement) configuration.getInterceptorChain().pluginAll(statement);
   }
