@@ -45,14 +45,14 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
 
   @Override
   protected <T> Flux<T> doQueryWithConnection(Connection connection, MappedStatement mappedStatement, Object parameter) {
-    MybatisReactiveContextManager.currentContext()
+    return MybatisReactiveContextManager.currentContext()
       .doOnNext(reactiveExecutorContext -> {
         if (log.isTraceEnabled()) {
           log.trace("Do query with connection from context : " + reactiveExecutorContext);
         }
       })
       .map(ReactiveExecutorContext::getR2dbcStatementLog)
-      .map(statementLogger -> {
+      .flatMapMany(statementLogger -> {
         BoundSql boundSql = mappedStatement.getBoundSql(parameter);
         Statement statement = connection.createStatement(boundSql.getSql());
         PreparedStatement preparedStatement = prepare(statement);
@@ -62,18 +62,9 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
         R2dbcResultSetsHandler resultSetsHandler = new R2dbcResultSetsHandler(getConfiguration(), mappedStatement);
         return Flux.from(statement.execute())
           .checkpoint("SQL: \"" + boundSql + "\" [DefaultReactiveExecutor]")
-          .concatMap(result -> resultSetsHandler.handleResultSet(result)
-//              result.map((row, rowMetadata) -> {
-//            RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, getConfiguration());
-////            return (List<T>) reactiveResultHandler.handleResult(rowResultWrapper);
-//            return rowResultWrapper;
-//          })
-          );
-//          .concatMap(resultList -> Flux.fromStream(resultList.stream().filter(Objects::nonNull)))
-//          .filter(data -> !Objects.equals(data, DEFERRED))
-//          .doOnComplete(() -> r2dbcStatementLog.logTotal(reactiveResultHandler.getResultRowTotalCount()));
+          .concatMap(result -> resultSetsHandler.handleResultSet(result));
+//          .doOnComplete(() -> statementLogger.logTotal(resultSetsHandler.getResultRowTotalCount()));
       });
-    return null;
   }
 
   private PreparedStatement prepare(Statement statement) {
