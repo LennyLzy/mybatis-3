@@ -59,10 +59,10 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
         DefaultParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameter, boundSql);
         parameterHandler.setParameters(preparedStatement);
         statement = intercept(statement);
-        R2dbcResultSetsHandler resultSetsHandler = new R2dbcResultSetsHandler(getConfiguration(), mappedStatement);
-        return Flux.from(statement.execute())
-          .checkpoint("SQL: \"" + boundSql + "\" [DefaultReactiveExecutor]")
-          .concatMap(result -> resultSetsHandler.handleResultSet(result));
+        R2dbcResultSetsHandler resultSetsHandler = new R2dbcResultSetsHandler(getConfiguration(), mappedStatement,null);
+//        return Flux.from(statement.execute())
+//          .checkpoint("SQL: \"" + boundSql + "\" [DefaultReactiveExecutor]")
+//          .concatMap(result -> resultSetsHandler.handleResultSet(result));
 //          .doOnComplete(() -> statementLogger.logTotal(resultSetsHandler.getResultRowTotalCount()));
       });
   }
