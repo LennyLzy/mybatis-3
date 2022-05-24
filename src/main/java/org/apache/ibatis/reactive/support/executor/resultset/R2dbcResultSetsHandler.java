@@ -106,29 +106,30 @@ public class R2dbcResultSetsHandler {
     }
     ResultMap resultMap = resultMaps.get(cur);
     if (result != null && resultMap != null) {
-      return handleResult(result, resultMap, null);
+      return handleResult(result, resultMap, null).then();
     }
     return Mono.empty();
   }
 
-  private Mono<Void> handleResult(Result result, ResultMap resultMap, ResultMapping parentMapping) {
+  private Flux<?> handleResult(Result result, ResultMap resultMap, ResultMapping parentMapping) {
     if (parentMapping != null) {
-      return handleRowValues(result, resultMap, null, parentMapping).then();
+      return handleRowValues(result, resultMap, null, parentMapping);
     } else {
       if (resultHandler == null) {
         DefaultResultHandler defaultResultHandler = new DefaultResultHandler(objectFactory);
         return handleRowValues(result, resultMap, defaultResultHandler, null)
-          .map(rows -> {
-            multipleResults.add(defaultResultHandler.getResultList());
-            return rows;
-          }).then();
+          .doOnComplete(()-> multipleResults.add(defaultResultHandler.getResultList()));
+//          .map(rows -> {
+//            multipleResults.add(defaultResultHandler.getResultList());
+//            return rows;
+//          });
       } else {
-        return handleRowValues(result, resultMap, resultHandler, null).then();
+        return handleRowValues(result, resultMap, resultHandler, null);
       }
     }
   }
 
-  private <T> Flux<T> handleRowValues(Result result, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) {
+  private Flux<?> handleRowValues(Result result, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) {
     if (resultMap.hasNestedResultMaps()) {
       checkResultHandler();
       return handleRowValuesForNestedResultMap(result, resultMap, resultHandler, parentMapping);
@@ -137,23 +138,27 @@ public class R2dbcResultSetsHandler {
     }
   }
 
-  private <T> Flux<T> handleRowValuesForSimpleResultMap(Result result, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) {
-//    return Flux.from(result.map((row, rowMetadata) -> {
-//      RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, configuration);
-//      return rowResultWrapper;
-//    })).map(rowResultWrapper -> {
-//      try {
-//        return handleRowValue(rowResultWrapper,resultMap,resultHandler,parentMapping);
-//      } catch (SQLException e) {
-//        e.printStackTrace();
-//        return null;
-//      }
-//    });
+  private Flux<?> handleRowValuesForSimpleResultMap(Result result, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) {
+    return Flux.from(result.map((row, rowMetadata) -> {
+      RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, configuration);
+      return rowResultWrapper;
+    })).concatMap(rowResultWrapper -> {
+      try {
+        return Flux.just(handleRowValue(rowResultWrapper, resultMap, resultHandler, parentMapping));
+      } catch (SQLException e) {
+        e.printStackTrace();
+        return Flux.error(e);
+      }
+    });
   }
 
   private Object handleRowValue(RowResultWrapper rowResultWrapper, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
     ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(rowResultWrapper, resultMap, null);
     Object rowValue = getRowValue(rowResultWrapper, discriminatedResultMap, null);
+    DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
+    resultContext.nextResultObject(rowValue);
+    ((ResultHandler<Object>) resultHandler).handleResult(resultContext);
+    return rowValue;
   }
 
   private Object getRowValue(RowResultWrapper rowResultWrapper, ResultMap resultMap, String columnPrefix) throws SQLException {
