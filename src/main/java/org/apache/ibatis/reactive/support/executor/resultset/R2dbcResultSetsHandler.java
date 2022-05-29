@@ -1,3 +1,18 @@
+/*
+ *    Copyright 2009-2022 the original author or authors.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package org.apache.ibatis.reactive.support.executor.resultset;
 
 import io.r2dbc.spi.Result;
@@ -5,16 +20,12 @@ import io.r2dbc.spi.Row;
 import org.apache.ibatis.annotations.AutomapConstructor;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.ExecutorException;
-import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.result.DefaultResultContext;
 import org.apache.ibatis.executor.result.DefaultResultHandler;
 import org.apache.ibatis.executor.result.ResultMapException;
-import org.apache.ibatis.executor.resultset.DefaultResultSetHandler;
-import org.apache.ibatis.executor.resultset.ResultSetWrapper;
 import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.reactive.support.ProxyInstanceFactory;
 import org.apache.ibatis.reactive.support.ReactiveConfiguration;
-import org.apache.ibatis.reactive.support.exception.R2dbcResultException;
 import org.apache.ibatis.reactive.support.executor.result.DelegateR2dbcResultRowDataHandler;
 import org.apache.ibatis.reactive.support.executor.result.RowResultWrapper;
 import org.apache.ibatis.reactive.support.executor.type.TypeHandleContext;
@@ -24,18 +35,15 @@ import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.session.AutoMappingBehavior;
 import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Constructor;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.LongAdder;
 
 public class R2dbcResultSetsHandler {
 
@@ -67,7 +75,7 @@ public class R2dbcResultSetsHandler {
   // result context
   private List<Object> multipleResults = Collections.synchronizedList(new ArrayList<>());
   private AtomicInteger handledResultSetCount = new AtomicInteger(0);
-  private final List<Object> resultHolder = new ArrayList<>();
+//  private final List<Object> resultHolder = new ArrayList<>();
 
   public R2dbcResultSetsHandler(ReactiveConfiguration configuration, MappedStatement mappedStatement, ResultHandler<?> resultHandler) {
     this.configuration = configuration;
@@ -169,8 +177,9 @@ public class R2dbcResultSetsHandler {
       return rowResultWrapper;
     })).concatMap(rowResultWrapper -> {
       try {
-        Object rowValue = handleNestedRowValue(rowResultWrapper, resultMap, resultHandler, parentMapping);
-        return Flux.just(rowValue);
+        ResultHandler rowResultHandler = new DefaultResultHandler();
+        handleNestedRowValue(rowResultWrapper, resultMap, rowResultHandler, parentMapping);
+        return Flux.just(((DefaultResultHandler) rowResultHandler).getResultList().get(0));
       } catch (SQLException e) {
         e.printStackTrace();
         return Flux.error(e);
@@ -184,8 +193,7 @@ public class R2dbcResultSetsHandler {
     return rowValue;
   }
 
-  private Object handleNestedRowValue(RowResultWrapper rowResultWrapper, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException{
-    if (resultHandler == null) resultHandler = new DefaultResultHandler();
+  private void handleNestedRowValue(RowResultWrapper rowResultWrapper, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
     final DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
     Object rowValue = previousRowValue;
     final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(rowResultWrapper, resultMap, null);
@@ -216,7 +224,7 @@ public class R2dbcResultSetsHandler {
 //      this.resultHolder.clear();
 //      return holdResultList;
 //    }
-    return Collections.singletonList(DEFERRED);
+//    return Collections.singletonList(DEFERRED);
   }
 
   private Object getRowValueForNestedResultMap(RowResultWrapper rowResultWrapper, ResultMap resultMap, CacheKey combinedKey, String columnPrefix, Object partialObject) throws SQLException {
@@ -351,7 +359,6 @@ public class R2dbcResultSetsHandler {
   }
 
   /**
-   *
    * @param resultMap
    * @param rowResultWrapper
    * @param cacheKey
@@ -819,7 +826,6 @@ public class R2dbcResultSetsHandler {
   }
 
   /**
-   *
    * @return
    */
   private TypeHandler initDelegateTypeHandler() {
@@ -832,4 +838,13 @@ public class R2dbcResultSetsHandler {
       TypeHandleContext.class
     );
   }
+
+  public void resetHandledResultSetCount() {
+    handledResultSetCount.set(0);
+  }
+
+  public Object nextResult() {
+    return this.multipleResults.get(handledResultSetCount.getAndIncrement());
+  }
+
 }
