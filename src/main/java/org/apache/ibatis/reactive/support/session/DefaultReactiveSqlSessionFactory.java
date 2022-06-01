@@ -25,6 +25,11 @@ public class DefaultReactiveSqlSessionFactory implements ReactiveSqlSessionFacto
 
   private ReactiveConfiguration configuration;
 
+  public DefaultReactiveSqlSessionFactory(ConnectionFactory connectionFactory, ReactiveConfiguration configuration) {
+    this.connectionFactory = connectionFactory;
+    this.configuration = configuration;
+  }
+
   @Override
   public ReactiveSqlSession openSession() {
     return openSession(false);
