@@ -27,18 +27,16 @@ public class SqlSessionProxy implements InvocationHandler {
 
   private ReactiveSqlSession reactiveSqlSession;
 
-  private final List<Method> methods = Arrays.asList(SqlSession.class.getMethods());
-
   public SqlSessionProxy(ReactiveSqlSession reactiveSqlSession) {
     this.reactiveSqlSession = reactiveSqlSession;
   }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//    if (method.getDeclaringClass().equals(Object.class)){
-//      return method.invoke(proxy, args);
-//    }
-    if (methods.contains(method)) {
+    if (method.getDeclaringClass().equals(Object.class)){
+      return method.invoke(proxy, args);
+    }
+    if (method.getDeclaringClass().equals(SqlSession.class)){
       throw new ReflectiveOperationException("not support");
     }
     return method.invoke(proxy, args);

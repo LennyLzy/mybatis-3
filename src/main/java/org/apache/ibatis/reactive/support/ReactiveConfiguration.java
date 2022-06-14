@@ -16,24 +16,34 @@
 package org.apache.ibatis.reactive.support;
 
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.Wrapped;
+import org.apache.ibatis.io.VFS;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.plugin.InterceptorChain;
 import org.apache.ibatis.reactive.support.binding.SqlSessionProxy;
 import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLog;
 import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLogFactory;
 import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
+import org.apache.ibatis.reflection.DefaultReflectorFactory;
+import org.apache.ibatis.reflection.ReflectorFactory;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.type.TypeHandlerRegistry;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 
 
-public class ReactiveConfiguration extends Configuration {
+public class ReactiveConfiguration implements Wrapped<Configuration> {
 
   private Configuration configuration;
   private final R2dbcStatementLogFactory r2dbcStatementLogFactory = new R2dbcStatementLogFactory(this);
   private final ConnectionFactory connectionFactory;
+  private volatile InterceptorChain interceptorChain;
+  protected ObjectFactory objectFactory = new DefaultObjectFactory();
 
   public ReactiveConfiguration(ConnectionFactory connectionFactory) {
     this.connectionFactory = connectionFactory;
@@ -57,20 +67,60 @@ public class ReactiveConfiguration extends Configuration {
 
   public <T> T getMapper(Class<T> type, ReactiveSqlSession sqlSession) {
     SqlSession sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(SqlSession.class.getClassLoader(), new Class[]{SqlSession.class}, new SqlSessionProxy(sqlSession));
-    return super.getMapper(type, sqlSessionProxy);
+    return this.configuration.getMapper(type, sqlSessionProxy);
   }
 
-  public InterceptorChain getInterceptorChain(){
-    try {
-      Field field = Configuration.class.getDeclaredField("interceptorChain");
-      InterceptorChain interceptorChain = (InterceptorChain) field.get(this.configuration);
-      return interceptorChain;
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
+  public InterceptorChain getInterceptorChain() {
+    if (this.interceptorChain == null) {
+      synchronized (this) {
+        if (this.interceptorChain == null) {
+          this.interceptorChain = new InterceptorChain();
+          this.configuration.getInterceptors().forEach(interceptor -> this.interceptorChain.addInterceptor(interceptor));
+        }
+      }
     }
-    return null;
+    return this.interceptorChain;
   }
+
+  @Override
+  public Configuration unwrap() {
+    return this.configuration;
+  }
+
+  public MappedStatement getMappedStatement(String name) {
+    return this.configuration.getMappedStatement(name);
+  }
+
+  public String getLogPrefix() {
+    return this.configuration.getLogPrefix();
+  }
+
+  public TypeHandlerRegistry getTypeHandlerRegistry() {
+    return this.configuration.getTypeHandlerRegistry();
+  }
+
+  public ObjectFactory getObjectFactory() {
+    return this.objectFactory;
+  }
+
+  public ReflectorFactory getReflectorFactory() {
+    return this.configuration.getReflectorFactory();
+  }
+
+  public ResultMap getResultMap(String nestedResultMapId) {
+    return this.configuration.getResultMap(nestedResultMapId);
+  }
+
+  private Class<? extends VFS> vfs;
+
+  public Class<? extends VFS> getVfs() {
+    return this.vfs;
+  }
+
+  public void setVfs(Class<? extends VFS> vfs) {
+    this.vfs = vfs;
+  }
+
+
 
 }

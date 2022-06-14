@@ -57,7 +57,7 @@ public class MapperMethod {
   }
 
   public Object execute(SqlSession sqlSession, Object[] args) {
-    if (method.returnReactive) {
+    if (method.returnMono||method.returnFlux) {
       return executeInReactive(sqlSession, args);
     }
     Object result;
@@ -208,7 +208,7 @@ public class MapperMethod {
     }
     Object param = method.convertArgsToSqlCommandParam(args);
     if (method.hasRowBounds()) {
-      RowBounds rowBounds = method.extractRowBounds(args);
+//      RowBounds rowBounds = method.extractRowBounds(args);
       return sqlSession.selectList(command.getName(), param);
     }
     return sqlSession.selectList(command.getName(), param);
@@ -389,7 +389,6 @@ public class MapperMethod {
     private final ParamNameResolver paramNameResolver;
 
     private final Class<?> returnInferredType;
-    private final boolean returnReactive;
     private final boolean returnMono;
     private final boolean returnFlux;
 
@@ -412,8 +411,6 @@ public class MapperMethod {
       this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
       this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
       this.paramNameResolver = new ParamNameResolver(configuration, method);
-
-      this.returnReactive = Mono.class.equals(this.returnType) || Flux.class.equals(this.returnType);
       this.returnMono = Mono.class.equals(this.returnType);
       this.returnFlux = Flux.class.equals(this.returnType);
     }
