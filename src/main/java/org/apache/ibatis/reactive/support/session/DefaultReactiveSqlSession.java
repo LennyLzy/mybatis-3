@@ -154,7 +154,7 @@ public class DefaultReactiveSqlSession implements ReactiveSqlSession, MybatisRea
 
   @Override
   public <T> T getMapper(Class<T> type) {
-    return null;
+    return this.configuration.getMapper(type, this);
   }
 
   @Override

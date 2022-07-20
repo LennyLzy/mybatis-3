@@ -15,6 +15,7 @@
  */
 package org.apache.ibatis.reactive.support.binding;
 
+import org.apache.ibatis.reactive.support.ReactiveConfiguration;
 import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
 import org.apache.ibatis.session.SqlSession;
 
@@ -33,10 +34,13 @@ public class SqlSessionProxy implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    if (method.getDeclaringClass().equals(Object.class)){
+    if (method.getDeclaringClass().equals(Object.class)) {
       return method.invoke(proxy, args);
     }
-    if (method.getDeclaringClass().equals(SqlSession.class)){
+    if ("getConfiguration".equals(method.getName())) {
+      return getRealSqlSession().getConfiguration().getConfiguration();
+    }
+    if (method.getDeclaringClass().equals(SqlSession.class)) {
       throw new ReflectiveOperationException("not support");
     }
     return method.invoke(proxy, args);

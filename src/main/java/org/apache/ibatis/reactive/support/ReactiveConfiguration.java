@@ -111,16 +111,12 @@ public class ReactiveConfiguration implements Wrapped<Configuration> {
     return this.configuration.getResultMap(nestedResultMapId);
   }
 
-  private Class<? extends VFS> vfs;
-
-  public Class<? extends VFS> getVfs() {
-    return this.vfs;
+  public <T> void addMapper(Class<T> type) {
+    this.getConfiguration().addMapper(type);
   }
 
-  public void setVfs(Class<? extends VFS> vfs) {
-    this.vfs = vfs;
+  public boolean hasMapper(Class<?> type) {
+    return this.getConfiguration().hasMapper(type);
   }
-
-
 
 }
