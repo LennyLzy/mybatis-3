@@ -18,6 +18,7 @@ package org.apache.ibatis.reactive.support.executor;
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.IsolationLevel;
 import io.r2dbc.spi.Statement;
+import org.apache.ibatis.executor.result.DefaultResultContext;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.BoundSql;
@@ -25,13 +26,16 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.reactive.support.ProxyInstanceFactory;
 import org.apache.ibatis.reactive.support.ReactiveConfiguration;
 import org.apache.ibatis.reactive.support.executor.parameter.PreparedReactiveStatement;
+import org.apache.ibatis.reactive.support.executor.result.RowResultWrapper;
 import org.apache.ibatis.reactive.support.executor.resultset.R2dbcResultSetsHandler;
 import org.apache.ibatis.reactive.support.executor.support.ReactiveExecutorContext;
 import org.apache.ibatis.reactive.support.session.MybatisReactiveContextManager;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 
 public class DefaultReactiveExecutor extends BaseReactiveExecutor {
@@ -72,9 +76,17 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
         R2dbcResultSetsHandler resultSetsHandler = new R2dbcResultSetsHandler(getConfiguration(), mappedStatement, null);
         return Flux.from(statement.execute())
           .checkpoint("SQL: \"" + boundSql + "\" [DefaultReactiveExecutor]")
-          .concatMap(result -> resultSetsHandler.handleResultSet(result))
-          .doOnComplete(() -> resultSetsHandler.resetHandledResultSetCount())
-          .map(result -> (T) resultSetsHandler.nextResult());
+          .concatMap(result -> Mono.from(result.map((row, rowMetadata) -> {
+              RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, configuration);
+              try {
+                resultSetsHandler.handleRowResult(rowResultWrapper);
+              } catch (SQLException e) {
+                e.printStackTrace();
+              }
+              return rowResultWrapper;
+            })
+            )
+          ).then(Mono.empty());
       });
   }
 

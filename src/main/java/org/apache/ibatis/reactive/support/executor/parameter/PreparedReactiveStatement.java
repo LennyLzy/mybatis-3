@@ -43,7 +43,7 @@ public class PreparedReactiveStatement implements InvocationHandler {
     if (PreparedStatement.class.equals(method.getDeclaringClass()) && method.getName().startsWith("setNull")) {
       bindNullSourceStatement((int) args[0], args[1]);
     }
-    if (PreparedStatement.class.equals(method.getDeclaringClass()) && method.getName().equals("set")) {
+    if (PreparedStatement.class.equals(method.getDeclaringClass()) && method.getName().startsWith("set")) {
       bindSourceStatement((int) args[0], args[1]);
     }
     if (PreparedStatement.class.equals(method.getDeclaringClass()))
@@ -52,11 +52,11 @@ public class PreparedReactiveStatement implements InvocationHandler {
   }
 
   private void bindNullSourceStatement(int index, Object value) {
-    this.statement.bindNull(index, value.getClass());
+    this.statement.bindNull(index - 1, value.getClass());
   }
 
   private void bindSourceStatement(int index, Object value) {
-    this.statement.bind(index, value);
+    this.statement.bind(index - 1, value);
   }
 
   public Statement getSourceStatement() {

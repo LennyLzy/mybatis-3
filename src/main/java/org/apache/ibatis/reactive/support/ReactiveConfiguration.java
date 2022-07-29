@@ -107,8 +107,8 @@ public class ReactiveConfiguration implements Wrapped<Configuration> {
     return this.configuration.getReflectorFactory();
   }
 
-  public ResultMap getResultMap(String nestedResultMapId) {
-    return this.configuration.getResultMap(nestedResultMapId);
+  public ResultMap getResultMap(String resultMapId) {
+    return this.configuration.getResultMap(resultMapId);
   }
 
   public <T> void addMapper(Class<T> type) {
@@ -119,4 +119,7 @@ public class ReactiveConfiguration implements Wrapped<Configuration> {
     return this.getConfiguration().hasMapper(type);
   }
 
+  public boolean hasResultMap(String resultMapId) {
+    return this.getConfiguration().hasResultMap(resultMapId);
+  }
 }
