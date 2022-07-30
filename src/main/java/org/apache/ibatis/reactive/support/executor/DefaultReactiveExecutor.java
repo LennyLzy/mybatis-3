@@ -76,7 +76,7 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
         R2dbcResultSetsHandler resultSetsHandler = new R2dbcResultSetsHandler(getConfiguration(), mappedStatement, null);
         return Flux.from(statement.execute())
           .checkpoint("SQL: \"" + boundSql + "\" [DefaultReactiveExecutor]")
-          .concatMap(result -> Mono.from(result.map((row, rowMetadata) -> {
+          .concatMap(result -> Flux.from(result.map((row, rowMetadata) -> {
               RowResultWrapper rowResultWrapper = new RowResultWrapper(row, rowMetadata, configuration);
               try {
                 resultSetsHandler.handleRowResult(rowResultWrapper);
@@ -85,7 +85,16 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
               }
               return rowResultWrapper;
             })
-            )
+            ).collectList().map(rws -> {
+              for (RowResultWrapper rw : rws) {
+                try {
+                  resultSetsHandler.handleNestedRowResult(rw);
+                } catch (SQLException e) {
+                  e.printStackTrace();
+                }
+              }
+              return resultSetsHandler.collapseSingleResultList();
+            }).doOnNext(list -> resultSetsHandler.nextResult())
           ).then(Mono.empty());
       });
   }

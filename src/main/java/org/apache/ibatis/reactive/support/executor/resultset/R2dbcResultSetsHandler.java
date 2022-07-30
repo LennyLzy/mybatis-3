@@ -47,6 +47,7 @@ import java.lang.reflect.Constructor;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class R2dbcResultSetsHandler {
 
@@ -100,8 +101,23 @@ public class R2dbcResultSetsHandler {
     ResultMap resultMap = resultMaps.get(cur);
     if (rw != null && resultMap != null) {
       doHandleRowResult(rw, resultMap, null);
-      cleanUpAfterHandlingResultSet();
     }
+  }
+
+  public void handleNestedRowResult(RowResultWrapper rw) throws SQLException {
+    int cur = handledResultCount.get();
+    String[] resultSets = mappedStatement.getResultSets();
+    if (resultSets != null) {
+      while (rw != null && cur < resultSets.length) {
+        ResultMapping parentMapping = nextResultMaps.get(resultSets[cur]);
+        if (parentMapping != null) {
+          String nestedResultMapId = parentMapping.getNestedResultMapId();
+          ResultMap resultMap = configuration.getResultMap(nestedResultMapId);
+          doHandleRowResult(rw, resultMap, parentMapping);
+        }
+      }
+    }
+
   }
 
   private Object doHandleRowResult(RowResultWrapper rw, ResultMap resultMap, ResultMapping parentMapping) throws SQLException {
@@ -779,6 +795,14 @@ public class R2dbcResultSetsHandler {
       }
     }
     return cacheKey;
+  }
+
+  public List<Object> collapseSingleResultList() {
+    return multipleResults.size() == 1 ? (List<Object>) multipleResults.get(0) : multipleResults;
+  }
+
+  public void nextResult() {
+    this.handledResultCount.incrementAndGet();
   }
 
   private static class PendingRelation {
