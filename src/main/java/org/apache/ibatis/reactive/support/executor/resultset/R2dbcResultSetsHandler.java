@@ -120,47 +120,49 @@ public class R2dbcResultSetsHandler {
 
   }
 
-  private Object doHandleRowResult(RowResultWrapper rw, ResultMap resultMap, ResultMapping parentMapping) throws SQLException {
+  private void doHandleRowResult(RowResultWrapper rw, ResultMap resultMap, ResultMapping parentMapping) throws SQLException {
     if (parentMapping != null) {
-      return handleRowValues(rw, resultMap, null, parentMapping);
+      handleRowValues(rw, resultMap, null, parentMapping);
     } else {
       if (resultHandler == null) {
         DefaultResultHandler defaultResultHandler = new DefaultResultHandler(objectFactory);
-        Object rowValue = handleRowValues(rw, resultMap, defaultResultHandler, null);
-        multipleResults.add(defaultResultHandler.getResultList());
+        handleRowValues(rw, resultMap, defaultResultHandler, null);
+        if (defaultResultHandler.getResultList() != null && defaultResultHandler.getResultList().size() > 0) {
+          this.multipleResults.add(defaultResultHandler.getResultList().get(0));
+        }
       } else {
-        return handleRowValues(rw, resultMap, resultHandler, null);
+        handleRowValues(rw, resultMap, resultHandler, null);
       }
     }
-    return null;
   }
 
-  private Object handleRowValues(RowResultWrapper rw, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
+  private void handleRowValues(RowResultWrapper rw, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
     if (resultMap.hasNestedResultMaps()) {
       checkResultHandler();
-      return handleRowValuesForNestedResultMap(rw, resultMap, resultHandler, parentMapping);
+      handleRowValuesForNestedResultMap(rw, resultMap, resultHandler, parentMapping);
     } else {
-      return handleRowValuesForSimpleResultMap(rw, resultMap, resultHandler, parentMapping);
+      handleRowValuesForSimpleResultMap(rw, resultMap, resultHandler, parentMapping);
     }
   }
 
-  private Object handleRowValuesForNestedResultMap(RowResultWrapper rw, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
+  private void handleRowValuesForNestedResultMap(RowResultWrapper rw, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
     try {
-      ResultHandler rowResultHandler = new DefaultResultHandler();
-      handleNestedRowValue(rw, resultMap, rowResultHandler, parentMapping);
-      return ((DefaultResultHandler) rowResultHandler).getResultList().get(0);
+//      ResultHandler rowResultHandler = new DefaultResultHandler();
+//      handleNestedRowValue(rw, resultMap, rowResultHandler, parentMapping);
+//      return ((DefaultResultHandler) rowResultHandler).getResultList().get(0);
+      handleNestedRowValue(rw, resultMap, resultHandler, parentMapping);
     } catch (SQLException e) {
       e.printStackTrace();
       throw e;
     }
   }
 
-  private Object handleRowValuesForSimpleResultMap(RowResultWrapper rw, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
+  private void handleRowValuesForSimpleResultMap(RowResultWrapper rw, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping) throws SQLException {
     DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
     try {
       Object rowValue = handleRowValue(rw, resultMap, resultHandler, parentMapping);
       storeObject(resultHandler, resultContext, rowValue, parentMapping, rw);
-      return rowValue;
+//      return rowValue;
     } catch (SQLException e) {
       e.printStackTrace();
       throw e;
@@ -797,12 +799,17 @@ public class R2dbcResultSetsHandler {
     return cacheKey;
   }
 
-  public List<Object> collapseSingleResultList() {
-    return multipleResults.size() == 1 ? (List<Object>) multipleResults.get(0) : multipleResults;
+  public List<Object> getMultipleResults() {
+    return this.multipleResults;
+  }
+
+  public List<?> collapseSingleResultList(List<List<Object>> results) {
+    return results.size() == 1 ? results.get(0) : results;
   }
 
   public void nextResult() {
     this.handledResultCount.incrementAndGet();
+    this.multipleResults.clear();
   }
 
   private static class PendingRelation {
@@ -831,8 +838,6 @@ public class R2dbcResultSetsHandler {
     return ProxyInstanceFactory.newInstanceOfInterfaces(
       TypeHandler.class,
       () -> new DelegateR2dbcResultRowDataHandler(
-//        this.r2DbcMybatisConfiguration.getNotSupportedDataTypes(),
-//        this.r2DbcMybatisConfiguration.getR2dbcTypeHandlerAdapterRegistry().getR2dbcTypeHandlerAdapters()
       ),
       TypeHandleContext.class
     );

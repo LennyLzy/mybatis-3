@@ -18,7 +18,6 @@ package org.apache.ibatis.reactive.support.executor;
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.IsolationLevel;
 import io.r2dbc.spi.Statement;
-import org.apache.ibatis.executor.result.DefaultResultContext;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.BoundSql;
@@ -36,6 +35,8 @@ import reactor.core.publisher.Mono;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DefaultReactiveExecutor extends BaseReactiveExecutor {
@@ -93,9 +94,14 @@ public class DefaultReactiveExecutor extends BaseReactiveExecutor {
                   e.printStackTrace();
                 }
               }
-              return resultSetsHandler.collapseSingleResultList();
-            }).doOnNext(list -> resultSetsHandler.nextResult())
-          ).then(Mono.empty());
+              List<Object> list = new ArrayList(resultSetsHandler.getMultipleResults());
+              return list;
+            })
+          ).doOnNext(list -> resultSetsHandler.nextResult())
+          .collectList()
+          .flatMapMany(results ->
+            Flux.fromStream(((List<T>)resultSetsHandler.collapseSingleResultList(results)).stream())
+          );
       });
   }
 
