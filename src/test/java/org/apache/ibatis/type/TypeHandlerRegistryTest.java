@@ -205,7 +205,7 @@ class TypeHandlerRegistryTest {
     typeHandlerRegistry.register(SomeInterfaceTypeHandler.class);
     assertNull(typeHandlerRegistry.getTypeHandler(SomeClass.class), "Registering interface works only for enums.");
     assertSame(EnumTypeHandler.class, typeHandlerRegistry.getTypeHandler(NoTypeHandlerInterfaceEnum.class).getClass(),
-        "When type handler for interface is not exist, apply default enum type handler.");
+        "When type handler for interface is not exist, apply defaults enum type handler.");
     assertSame(SomeInterfaceTypeHandler.class, typeHandlerRegistry.getTypeHandler(SomeEnum.class).getClass());
     assertSame(SomeInterfaceTypeHandler.class, typeHandlerRegistry.getTypeHandler(ExtendingSomeEnum.class).getClass());
     assertSame(SomeInterfaceTypeHandler.class,

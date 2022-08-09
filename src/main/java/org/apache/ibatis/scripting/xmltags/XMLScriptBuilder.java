@@ -241,7 +241,7 @@ public class XMLScriptBuilder extends BaseBuilder {
       if (defaultSqlNodes.size() == 1) {
         defaultSqlNode = defaultSqlNodes.get(0);
       } else if (defaultSqlNodes.size() > 1) {
-        throw new BuilderException("Too many default (otherwise) elements in choose statement.");
+        throw new BuilderException("Too many defaults (otherwise) elements in choose statement.");
       }
       return defaultSqlNode;
     }

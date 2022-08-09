@@ -45,7 +45,7 @@ class AnnotationMapperTest {
     configuration.addMapper(AnnotationMapper.class);
     SupportClasses.CustomCache cache = SupportClasses.Utils.unwrap(configuration.getCache(AnnotationMapper.class.getName()));
 
-    Assertions.assertThat(cache.getName()).isEqualTo("default");
+    Assertions.assertThat(cache.getName()).isEqualTo("defaults");
 
     try (SqlSession sqlSession = factory.openSession()) {
       AnnotationMapper mapper = sqlSession.getMapper(AnnotationMapper.class);
@@ -80,7 +80,7 @@ class AnnotationMapperTest {
   }
 
   @CacheNamespace(implementation = SupportClasses.CustomCache.class, properties = {
-      @Property(name = "name", value = "${cache.name:default}")
+      @Property(name = "name", value = "${cache.name:defaults}")
   })
   public interface AnnotationMapper {
 

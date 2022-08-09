@@ -29,7 +29,7 @@ class SerializedCacheTest {
 
   @Test
   void shouldDemonstrateSerializedObjectAreEqual() {
-    SerializedCache cache = new SerializedCache(new PerpetualCache("default"));
+    SerializedCache cache = new SerializedCache(new PerpetualCache("defaults"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, new CachingObject(i));
     }
@@ -40,7 +40,7 @@ class SerializedCacheTest {
 
   @Test
   void shouldDemonstrateNullsAreSerializable() {
-    SerializedCache cache = new SerializedCache(new PerpetualCache("default"));
+    SerializedCache cache = new SerializedCache(new PerpetualCache("defaults"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, null);
     }
@@ -51,7 +51,7 @@ class SerializedCacheTest {
 
   @Test
   void throwExceptionWhenTryingToCacheNonSerializableObject() {
-    SerializedCache cache = new SerializedCache(new PerpetualCache("default"));
+    SerializedCache cache = new SerializedCache(new PerpetualCache("defaults"));
     assertThrows(CacheException.class,
       () -> cache.putObject(0, new CachingObjectWithoutSerializable(0)));
   }

@@ -34,7 +34,7 @@ public interface ObjectFactory {
   }
 
   /**
-   * Creates a new object with default constructor.
+   * Creates a new object with defaults constructor.
    *
    * @param <T>
    *          the generic type

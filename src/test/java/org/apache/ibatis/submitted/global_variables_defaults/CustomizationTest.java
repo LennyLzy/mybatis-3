@@ -55,12 +55,12 @@ class CustomizationTest {
         .isEqualTo("jdbc:hsqldb:mem:global_variables_defaults");
     Assertions.assertThat(configuration.getDatabaseId()).isEqualTo("hsql");
     Assertions.assertThat(((SupportClasses.CustomObjectFactory) configuration.getObjectFactory()).getProperties().getProperty("name"))
-        .isEqualTo("default");
-    Assertions.assertThat(cache.getName()).isEqualTo("default");
+        .isEqualTo("defaults");
+    Assertions.assertThat(cache.getName()).isEqualTo("defaults");
 
     try (SqlSession sqlSession = factory.openSession()) {
       CustomDefaultValueSeparatorMapper mapper = sqlSession.getMapper(CustomDefaultValueSeparatorMapper.class);
-      Assertions.assertThat(mapper.selectValue(null)).isEqualTo("default");
+      Assertions.assertThat(mapper.selectValue(null)).isEqualTo("defaults");
     }
 
   }
@@ -100,10 +100,10 @@ class CustomizationTest {
   }
 
   @CacheNamespace(implementation = SupportClasses.CustomCache.class, properties = {
-      @Property(name = "name", value = "${cache:name?:default}")
+      @Property(name = "name", value = "${cache:name?:defaults}")
   })
   private interface CustomDefaultValueSeparatorMapper {
-    @Select("SELECT '${val != null ? val : 'default'}' FROM INFORMATION_SCHEMA.SYSTEM_USERS")
+    @Select("SELECT '${val != null ? val : 'defaults'}' FROM INFORMATION_SCHEMA.SYSTEM_USERS")
     String selectValue(@Param("val") String val);
   }
 

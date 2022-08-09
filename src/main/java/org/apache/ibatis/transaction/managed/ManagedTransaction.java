@@ -29,7 +29,7 @@ import org.apache.ibatis.transaction.Transaction;
  * {@link Transaction} that lets the container manage the full lifecycle of the transaction.
  * Delays connection retrieval until getConnection() is called.
  * Ignores all commit or rollback requests.
- * By default, it closes the connection but can be configured not to do it.
+ * By defaults, it closes the connection but can be configured not to do it.
  *
  * @author Clinton Begin
  *

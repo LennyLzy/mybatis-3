@@ -276,7 +276,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void environmentsElement(XNode context) throws Exception {
     if (context != null) {
       if (environment == null) {
-        environment = context.getStringAttribute("default");
+        environment = context.getStringAttribute("defaults");
       }
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");

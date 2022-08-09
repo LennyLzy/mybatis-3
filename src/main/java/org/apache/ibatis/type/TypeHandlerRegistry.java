@@ -64,7 +64,7 @@ public final class TypeHandlerRegistry {
   private Class<? extends TypeHandler> defaultEnumTypeHandler = EnumTypeHandler.class;
 
   /**
-   * The default constructor.
+   * The defaults constructor.
    */
   public TypeHandlerRegistry() {
     this(new Configuration());
@@ -180,8 +180,8 @@ public final class TypeHandlerRegistry {
   }
 
   /**
-   * Set a default {@link TypeHandler} class for {@link Enum}.
-   * A default {@link TypeHandler} is {@link org.apache.ibatis.type.EnumTypeHandler}.
+   * Set a defaults {@link TypeHandler} class for {@link Enum}.
+   * A defaults {@link TypeHandler} is {@link org.apache.ibatis.type.EnumTypeHandler}.
    * @param typeHandler a type handler class for {@link Enum}
    * @since 3.4.5
    */

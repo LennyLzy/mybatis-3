@@ -26,6 +26,7 @@ import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLog;
 import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLogFactory;
 import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
+import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
@@ -121,5 +122,9 @@ public class ReactiveConfiguration implements Wrapped<Configuration> {
 
   public boolean hasResultMap(String resultMapId) {
     return this.getConfiguration().hasResultMap(resultMapId);
+  }
+
+  public MetaObject newMetaObject(Object object) {
+    return this.configuration.newMetaObject(object);
   }
 }

@@ -29,7 +29,7 @@ class WeakCacheTest {
   @Test
   void shouldDemonstrateObjectsBeingCollectedAsNeeded() {
     final int N = 3000000;
-    WeakCache cache = new WeakCache(new PerpetualCache("default"));
+    WeakCache cache = new WeakCache(new PerpetualCache("defaults"));
     for (int i = 0; i < N; i++) {
       cache.putObject(i, i);
       if (cache.getSize() < i + 1) {
@@ -46,7 +46,7 @@ class WeakCacheTest {
 
   @Test
   void shouldDemonstrateCopiesAreEqual() {
-    Cache cache = new WeakCache(new PerpetualCache("default"));
+    Cache cache = new WeakCache(new PerpetualCache("defaults"));
     cache = new SerializedCache(cache);
     for (int i = 0; i < 1000; i++) {
       cache.putObject(i, i);
@@ -57,7 +57,7 @@ class WeakCacheTest {
 
   @Test
   void shouldRemoveItemOnDemand() {
-    WeakCache cache = new WeakCache(new PerpetualCache("default"));
+    WeakCache cache = new WeakCache(new PerpetualCache("defaults"));
     cache.putObject(0, 0);
     assertNotNull(cache.getObject(0));
     cache.removeObject(0);
@@ -66,7 +66,7 @@ class WeakCacheTest {
 
   @Test
   void shouldFlushAllItemsOnDemand() {
-    WeakCache cache = new WeakCache(new PerpetualCache("default"));
+    WeakCache cache = new WeakCache(new PerpetualCache("defaults"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, i);
     }

@@ -186,12 +186,12 @@ public class XNode {
    * Return a attribute value as String.
    *
    * <p>
-   * If attribute value is absent, return value that provided from supplier of default value.
+   * If attribute value is absent, return value that provided from supplier of defaults value.
    *
    * @param name
    *          attribute name
    * @param defSupplier
-   *          a supplier of default value
+   *          a supplier of defaults value
    * @return the string attribute
    * @since 3.5.4
    */

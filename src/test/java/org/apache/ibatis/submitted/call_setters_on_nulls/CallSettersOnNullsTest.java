@@ -79,7 +79,7 @@ class CallSettersOnNullsTest {
       List<Map<String, Object>> oneColumns = mapper.getNameOnly();
       // When callSetterOnNull is true, setters are called with null values
       // but if all the values for an object are null
-      // the object itself should be null (same as default behaviour)
+      // the object itself should be null (same as defaults behaviour)
       Assertions.assertNull(oneColumns.get(1));
     }
   }
@@ -93,7 +93,7 @@ class CallSettersOnNullsTest {
       // TEST changed after fix for #307
       // When callSetterOnNull is true, setters are called with null values
       // but if all the values for an object are null
-      // the object itself should be null (same as default behaviour)
+      // the object itself should be null (same as defaults behaviour)
       Assertions.assertNull(oneColumns.get(1));
     }
   }

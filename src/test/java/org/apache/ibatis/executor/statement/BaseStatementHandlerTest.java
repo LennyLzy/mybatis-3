@@ -81,7 +81,7 @@ class BaseStatementHandlerTest {
         BaseStatementHandler handler = new SimpleStatementHandler(null, mappedStatementBuilder.build(), null, null, null, null);
         handler.setStatementTimeout(statement, null);
 
-        verify(statement).setQueryTimeout(20); // apply a default timeout
+        verify(statement).setQueryTimeout(20); // apply a defaults timeout
     }
 
     @Test

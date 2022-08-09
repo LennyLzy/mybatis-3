@@ -248,7 +248,7 @@ public class Configuration {
   /**
    * Gets an applying type when omit a type on sql provider annotation(e.g. {@link org.apache.ibatis.annotations.SelectProvider}).
    *
-   * @return the default type for sql provider annotation
+   * @return the defaults type for sql provider annotation
    * @since 3.5.6
    */
   public Class<?> getDefaultSqlProviderType() {
@@ -259,7 +259,7 @@ public class Configuration {
    * Sets an applying type when omit a type on sql provider annotation(e.g. {@link org.apache.ibatis.annotations.SelectProvider}).
    *
    * @param defaultSqlProviderType
-   *          the default type for sql provider annotation
+   *          the defaults type for sql provider annotation
    * @since 3.5.6
    */
   public void setDefaultSqlProviderType(Class<?> defaultSqlProviderType) {
@@ -299,7 +299,7 @@ public class Configuration {
   }
 
   /**
-   * Sets the default value of 'nullable' attribute on 'foreach' tag.
+   * Sets the defaults value of 'nullable' attribute on 'foreach' tag.
    *
    * @param nullableOnForEach If nullable, set to {@code true}
    * @since 3.5.9
@@ -309,7 +309,7 @@ public class Configuration {
   }
 
   /**
-   * Returns the default value of 'nullable' attribute on 'foreach' tag.
+   * Returns the defaults value of 'nullable' attribute on 'foreach' tag.
    *
    * <p>Default is {@code false}.
    *
@@ -481,9 +481,9 @@ public class Configuration {
   }
 
   /**
-   * Gets the default fetch size.
+   * Gets the defaults fetch size.
    *
-   * @return the default fetch size
+   * @return the defaults fetch size
    * @since 3.3.0
    */
   public Integer getDefaultFetchSize() {
@@ -491,10 +491,10 @@ public class Configuration {
   }
 
   /**
-   * Sets the default fetch size.
+   * Sets the defaults fetch size.
    *
    * @param defaultFetchSize
-   *          the new default fetch size
+   *          the new defaults fetch size
    * @since 3.3.0
    */
   public void setDefaultFetchSize(Integer defaultFetchSize) {
@@ -502,9 +502,9 @@ public class Configuration {
   }
 
   /**
-   * Gets the default result set type.
+   * Gets the defaults result set type.
    *
-   * @return the default result set type
+   * @return the defaults result set type
    * @since 3.5.2
    */
   public ResultSetType getDefaultResultSetType() {
@@ -512,10 +512,10 @@ public class Configuration {
   }
 
   /**
-   * Sets the default result set type.
+   * Sets the defaults result set type.
    *
    * @param defaultResultSetType
-   *          the new default result set type
+   *          the new defaults result set type
    * @since 3.5.2
    */
   public void setDefaultResultSetType(ResultSetType defaultResultSetType) {
@@ -559,8 +559,8 @@ public class Configuration {
   }
 
   /**
-   * Set a default {@link TypeHandler} class for {@link Enum}.
-   * A default {@link TypeHandler} is {@link org.apache.ibatis.type.EnumTypeHandler}.
+   * Set a defaults {@link TypeHandler} class for {@link Enum}.
+   * A defaults {@link TypeHandler} is {@link org.apache.ibatis.type.EnumTypeHandler}.
    * @param typeHandler a type handler class for {@link Enum}
    * @since 3.4.5
    */
@@ -650,9 +650,9 @@ public class Configuration {
   }
 
   /**
-   * Gets the default scripting language instance.
+   * Gets the defaults scripting language instance.
    *
-   * @return the default scripting language instance
+   * @return the defaults scripting language instance
    * @deprecated Use {@link #getDefaultScriptingLanguageInstance()}
    */
   @Deprecated

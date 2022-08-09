@@ -29,7 +29,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 /**
- * This is the default implementation of a MyBatis Cursor.
+ * This is the defaults implementation of a MyBatis Cursor.
  * This implementation is not thread safe.
  *
  * @author Guillaume Darmont / guillaume@dropinocean.com

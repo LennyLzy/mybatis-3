@@ -26,7 +26,7 @@ import org.apache.ibatis.builder.BuilderException;
  * The interface that resolve an SQL provider method via an SQL provider class.
  *
  * <p> This interface need to implements at an SQL provider class and
- * it need to define the default constructor for creating a new instance.
+ * it need to define the defaults constructor for creating a new instance.
  *
  * @since 3.5.1
  * @author Kazuki Shimizu
@@ -36,7 +36,7 @@ public interface ProviderMethodResolver {
   /**
    * Resolve an SQL provider method.
    *
-   * <p> The default implementation return a method that matches following conditions.
+   * <p> The defaults implementation return a method that matches following conditions.
    * <ul>
    *   <li>Method name matches with mapper method</li>
    *   <li>Return type matches the {@link CharSequence}({@link String}, {@link StringBuilder}, etc...)</li>

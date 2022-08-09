@@ -42,7 +42,7 @@ class XmlMapperTest {
     configuration.addMapper(XmlMapper.class);
     SupportClasses.CustomCache cache = SupportClasses.Utils.unwrap(configuration.getCache(XmlMapper.class.getName()));
 
-    Assertions.assertThat(cache.getName()).isEqualTo("default");
+    Assertions.assertThat(cache.getName()).isEqualTo("defaults");
 
     try (SqlSession sqlSession = factory.openSession()) {
       XmlMapper mapper = sqlSession.getMapper(XmlMapper.class);

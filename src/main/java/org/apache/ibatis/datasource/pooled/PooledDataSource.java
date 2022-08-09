@@ -150,7 +150,7 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * Sets the default network timeout value to wait for the database operation to complete. See {@link Connection#setNetworkTimeout(java.util.concurrent.Executor, int)}
+   * Sets the defaults network timeout value to wait for the database operation to complete. See {@link Connection#setNetworkTimeout(java.util.concurrent.Executor, int)}
    *
    * @param milliseconds
    *          The time in milliseconds to wait for the database operation to complete.
@@ -283,9 +283,9 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * Gets the default network timeout.
+   * Gets the defaults network timeout.
    *
-   * @return the default network timeout
+   * @return the defaults network timeout
    * @since 3.5.2
    */
   public Integer getDefaultNetworkTimeout() {

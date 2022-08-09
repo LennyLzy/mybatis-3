@@ -25,7 +25,7 @@ class FifoCacheTest {
 
   @Test
   void shouldRemoveFirstItemInBeyondFiveEntries() {
-    FifoCache cache = new FifoCache(new PerpetualCache("default"));
+    FifoCache cache = new FifoCache(new PerpetualCache("defaults"));
     cache.setSize(5);
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, i);
@@ -38,7 +38,7 @@ class FifoCacheTest {
 
   @Test
   void shouldRemoveItemOnDemand() {
-    FifoCache cache = new FifoCache(new PerpetualCache("default"));
+    FifoCache cache = new FifoCache(new PerpetualCache("defaults"));
     cache.putObject(0, 0);
     assertNotNull(cache.getObject(0));
     cache.removeObject(0);
@@ -47,7 +47,7 @@ class FifoCacheTest {
 
   @Test
   void shouldFlushAllItemsOnDemand() {
-    FifoCache cache = new FifoCache(new PerpetualCache("default"));
+    FifoCache cache = new FifoCache(new PerpetualCache("defaults"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, i);
     }

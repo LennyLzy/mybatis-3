@@ -341,7 +341,7 @@ public class OurSqlBuilder {
       sqlBuffer.append("</if>");
     }
     sqlBuffer.append("</set>");
-    // For simplicity, there is no @Id annotation here, using default id directly
+    // For simplicity, there is no @Id annotation here, using defaults id directly
     sqlBuffer.append("where id = #{id}");
     sqlBuffer.append("</script>");
     return sqlBuffer.toString();

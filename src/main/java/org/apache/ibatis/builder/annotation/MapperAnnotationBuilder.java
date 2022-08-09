@@ -662,7 +662,7 @@ public class MapperAnnotationBuilder {
       // Annotations exist, but there is no matching one for the specified databaseId
       throw new BuilderException(
           String.format(
-              "Could not find a statement annotation that correspond a current database or default statement on method '%s.%s'. Current database id is [%s].",
+              "Could not find a statement annotation that correspond a current database or defaults statement on method '%s.%s'. Current database id is [%s].",
               method.getDeclaringClass().getName(), method.getName(), databaseId));
     }
     return Optional.ofNullable(annotationWrapper);

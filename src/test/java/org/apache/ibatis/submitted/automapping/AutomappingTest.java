@@ -147,7 +147,7 @@ class AutomappingTest {
 
   @Test
   void shouldGetBooks() {
-    // set automapping to default partial
+    // set automapping to defaults partial
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -159,7 +159,7 @@ class AutomappingTest {
 
   @Test
   void shouldUpdateFinalField() {
-    // set automapping to default partial
+    // set automapping to defaults partial
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);

@@ -14,6 +14,6 @@
  *    limitations under the License.
  */
 /**
- * Contains the default cache implementation.
+ * Contains the defaults cache implementation.
  */
 package org.apache.ibatis.cache.impl;

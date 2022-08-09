@@ -32,7 +32,7 @@ import org.apache.ibatis.logging.LogFactory;
  *
  * <p>A ClassLoader is used to locate all locations (directories and jar files) in the class
  * path that contain classes within certain packages, and then to load those classes and
- * check them. By default the ClassLoader returned by
+ * check them. By defaults the ClassLoader returned by
  * {@code Thread.currentThread().getContextClassLoader()} is used, but this can be overridden
  * by calling {@link #setClassLoader(ClassLoader)} prior to invoking any of the {@code find()}
  * methods.</p>

@@ -46,7 +46,7 @@ class ConfigurationTest {
             .isEqualTo("jdbc:hsqldb:mem:global_variables_defaults");
     Assertions.assertThat(configuration.getDatabaseId()).isEqualTo("hsql");
     Assertions.assertThat(((SupportClasses.CustomObjectFactory) configuration.getObjectFactory()).getProperties().getProperty("name"))
-            .isEqualTo("default");
+            .isEqualTo("defaults");
 
   }
 

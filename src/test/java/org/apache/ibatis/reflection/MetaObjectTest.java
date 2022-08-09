@@ -265,7 +265,7 @@ class MetaObjectTest {
     MetaObject meta = MetaObject.forObject(new Author(), SystemMetaObject.DEFAULT_OBJECT_FACTORY, new CustomBeanWrapperFactory(), new DefaultReflectorFactory());
     assertEquals(CustomBeanWrapper.class, meta.getObjectWrapper().getClass());
 
-    // Make sure the old default factory is in place and still works
+    // Make sure the old defaults factory is in place and still works
     meta = SystemMetaObject.forObject(new Author());
     assertNotEquals(CustomBeanWrapper.class, meta.getObjectWrapper().getClass());
   }

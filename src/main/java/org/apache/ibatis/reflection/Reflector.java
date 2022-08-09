@@ -365,7 +365,7 @@ public class Reflector {
     if (defaultConstructor != null) {
       return defaultConstructor;
     } else {
-      throw new ReflectionException("There is no default constructor for " + type);
+      throw new ReflectionException("There is no defaults constructor for " + type);
     }
   }
 

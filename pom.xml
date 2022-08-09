@@ -141,7 +141,7 @@
     <spotbugs.onlyAnalyze>org.apache.ibatis.*</spotbugs.onlyAnalyze>
     <project.build.outputTimestamp>1645112687</project.build.outputTimestamp>
     <r2dbc-bom.version>Borca-SR1</r2dbc-bom.version>
-    <reactor-bom.version>2020.0.18</reactor-bom.version>
+    <reactor-bom.version>2020.0.21</reactor-bom.version>
   </properties>
 
   <dependencyManagement>
@@ -332,13 +332,6 @@
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
       <version>1.12.8</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>fastjson</artifactId>
-      <version>1.2.61</version>
-      <scope>provided</scope>
     </dependency>
 
   </dependencies>

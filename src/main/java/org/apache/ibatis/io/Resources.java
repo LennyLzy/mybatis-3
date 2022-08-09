@@ -36,7 +36,7 @@ public class Resources {
 
   /**
    * Charset to use when calling getResourceAsReader.
-   * null means use the system default.
+   * null means use the system defaults.
    */
   private static Charset charset;
 
@@ -44,18 +44,18 @@ public class Resources {
   }
 
   /**
-   * Returns the default classloader (may be null).
+   * Returns the defaults classloader (may be null).
    *
-   * @return The default classloader
+   * @return The defaults classloader
    */
   public static ClassLoader getDefaultClassLoader() {
     return classLoaderWrapper.defaultClassLoader;
   }
 
   /**
-   * Sets the default classloader
+   * Sets the defaults classloader
    *
-   * @param defaultClassLoader - the new default ClassLoader
+   * @param defaultClassLoader - the new defaults ClassLoader
    */
   public static void setDefaultClassLoader(ClassLoader defaultClassLoader) {
     classLoaderWrapper.defaultClassLoader = defaultClassLoader;

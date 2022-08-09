@@ -26,7 +26,7 @@ import org.apache.ibatis.mapping.ResultSetType;
 import org.apache.ibatis.mapping.StatementType;
 
 /**
- * The annotation that specify options for customizing default behaviors.
+ * The annotation that specify options for customizing defaults behaviors.
  *
  * <p>
  * <b>How to use:</b>
@@ -48,7 +48,7 @@ import org.apache.ibatis.mapping.StatementType;
 public @interface Options {
   /**
    * The options for the {@link Options#flushCache()}.
-   * The default is {@link FlushCachePolicy#DEFAULT}
+   * The defaults is {@link FlushCachePolicy#DEFAULT}
    */
   enum FlushCachePolicy {
     /** <code>false</code> for select statement; <code>true</code> for insert/update/delete statement. */
