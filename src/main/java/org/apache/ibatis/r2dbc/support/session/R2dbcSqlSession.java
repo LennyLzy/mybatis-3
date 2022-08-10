@@ -188,7 +188,7 @@ public interface R2dbcSqlSession {
    * @param parameter A parameter object to pass to the statement.
    * @return int The number of rows affected by the update.
    */
-  Mono<Integer> update(String statement, Object parameter);
+  Mono<Integer> update(String statement, Object parameter) throws SQLException;
 
   /**
    * Execute a delete statement. The number of rows affected will be returned.

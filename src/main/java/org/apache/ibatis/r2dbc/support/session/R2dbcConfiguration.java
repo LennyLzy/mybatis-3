@@ -8,9 +8,13 @@ import org.apache.ibatis.r2dbc.support.executor.*;
 import org.apache.ibatis.r2dbc.support.transaction.R2dbcTransaction;
 import org.apache.ibatis.r2dbc.support.transaction.R2dbcTransactionFactory;
 import org.apache.ibatis.r2dbc.support.transaction.defaults.DefaultR2dbcTransactionFactory;
-import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLog;
+import org.apache.ibatis.reactive.support.binding.SqlSessionProxy;
+import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+
+import java.lang.reflect.Proxy;
 
 public class R2dbcConfiguration {
 
@@ -64,6 +68,11 @@ public class R2dbcConfiguration {
 
   public R2dbcStatementLog getR2dbcStatementLog(MappedStatement mappedStatement) {
     return this.r2dbcStatementLogFactory.getR2dbcStatementLog(mappedStatement);
+  }
+
+  public <T> T getMapper(Class<T> type, R2dbcSqlSession sqlSession) {
+    SqlSession sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(SqlSession.class.getClassLoader(), new Class[]{SqlSession.class}, new SqlSessionProxy(sqlSession));
+    return this.delegateConfiguration.getMapper(type, sqlSessionProxy);
   }
 
 }

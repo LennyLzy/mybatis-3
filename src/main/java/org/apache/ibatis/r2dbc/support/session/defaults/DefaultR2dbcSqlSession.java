@@ -1,30 +1,26 @@
 package org.apache.ibatis.r2dbc.support.session.defaults;
 
 import io.r2dbc.spi.Connection;
-import io.r2dbc.spi.IsolationLevel;
 import io.r2dbc.spi.TransactionDefinition;
-import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.executor.BatchResult;
-import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.r2dbc.support.executor.R2dbcExecutor;
+import org.apache.ibatis.r2dbc.support.executor.context.R2dbcErrorContext;
 import org.apache.ibatis.r2dbc.support.executor.result.R2dbcResultHandler;
 import org.apache.ibatis.r2dbc.support.session.R2dbcConfiguration;
 import org.apache.ibatis.r2dbc.support.session.R2dbcSqlSession;
-import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLog;
-import org.apache.ibatis.reactive.support.executor.support.ReactiveExecutorContext;
+import org.apache.ibatis.r2dbc.support.session.R2dbcStatementLog;
+import org.apache.ibatis.r2dbc.support.transaction.R2dbcTransaction;
 import org.apache.ibatis.reflection.ParamNameResolver;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.ibatis.session.TransactionIsolationLevel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 
 public class DefaultR2dbcSqlSession implements R2dbcSqlSession {
 
@@ -76,12 +72,13 @@ public class DefaultR2dbcSqlSession implements R2dbcSqlSession {
     return this.selectList(statement, parameter, rowBounds, null);
   }
 
-  public  <E> Flux<E> selectList(String statement, Object parameter, RowBounds rowBounds, R2dbcResultHandler handler) throws SQLException {
+  public <E> Flux<E> selectList(String statement, Object parameter, RowBounds rowBounds, R2dbcResultHandler handler) throws SQLException {
     MappedStatement mappedStatement = configuration.getMappedStatement(statement);
     Object wrappedParameter = ParamNameResolver.wrapToMapIfCollection(parameter, null);
-    return executor.query(mappedStatement, wrappedParameter, rowBounds, handler)
-      .contextWrite(context -> initLogContext(context, this.configuration.getR2dbcStatementLog(mappedStatement)));
+    return executor.<E>query(mappedStatement, wrappedParameter, rowBounds, handler)
+      .contextWrite(context -> initExecuteContext(context, this.configuration.getR2dbcStatementLog(mappedStatement)));
   }
+
 
   @Override
   public <K, V> Mono<Map<K, V>> selectMap(String statement, String mapKey) {
@@ -129,8 +126,11 @@ public class DefaultR2dbcSqlSession implements R2dbcSqlSession {
   }
 
   @Override
-  public Mono<Integer> update(String statement, Object parameter) {
-    return null;
+  public Mono<Integer> update(String statement, Object parameter) throws SQLException {
+    MappedStatement mappedStatement = configuration.getMappedStatement(statement);
+    Object wrappedParameter = ParamNameResolver.wrapToMapIfCollection(parameter, null);
+    return executor.update(mappedStatement, wrappedParameter)
+      .contextWrite(context -> initExecuteContext(context, this.configuration.getR2dbcStatementLog(mappedStatement)));
   }
 
   @Override
@@ -185,7 +185,7 @@ public class DefaultR2dbcSqlSession implements R2dbcSqlSession {
 
   @Override
   public <T> T getMapper(Class<T> type) {
-    return null;
+    return this.configuration.;
   }
 
   @Override
@@ -193,23 +193,11 @@ public class DefaultR2dbcSqlSession implements R2dbcSqlSession {
     return null;
   }
 
-  public Context initLogContext(Context context, R2dbcStatementLog r2dbcStatementLog) {
-//    Optional<ReactiveExecutorContext> optionalContext = context.getOrEmpty(ReactiveExecutorContext.class)
-//      .map(ReactiveExecutorContext.class::cast);
-//    if (optionalContext.isPresent()) {
-//      ReactiveExecutorContext reactiveExecutorContext = optionalContext.get();
-//      if (this.withTransaction) {
-//        reactiveExecutorContext.setWithTransaction();
-//      }
-//      reactiveExecutorContext.setR2dbcStatementLog(r2dbcStatementLog);
-//      return context;
-//    }
-//    ReactiveExecutorContext newContext = new ReactiveExecutorContext(autoCommit, (IsolationLevel)level);
-//    newContext.setR2dbcStatementLog(r2dbcStatementLog);
-//    if (this.withTransaction) {
-//      newContext.setWithTransaction();
-//    }
-//    return context.put(ReactiveExecutorContext.class, newContext);
+  public Context initExecuteContext(Context context, R2dbcStatementLog statementLog) {
+    return context
+      .put(R2dbcTransaction.class, this.executor.getTransaction())
+      .put(R2dbcErrorContext.class, R2dbcErrorContext.instance())
+      .put(R2dbcStatementLog.class, statementLog);
   }
 
 }

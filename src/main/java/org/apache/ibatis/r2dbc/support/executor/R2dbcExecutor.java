@@ -6,6 +6,7 @@ import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.r2dbc.support.executor.result.R2dbcResultHandler;
+import org.apache.ibatis.r2dbc.support.transaction.R2dbcTransaction;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.RowBounds;
 import reactor.core.publisher.Flux;
@@ -38,7 +39,7 @@ public interface R2dbcExecutor {
 
   Mono<Void> deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType);
 
-//  Transaction getTransaction();
+  R2dbcTransaction getTransaction();
 
   Mono<Void> close(boolean forceRollback);
 

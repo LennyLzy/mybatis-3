@@ -1,8 +1,6 @@
 package org.apache.ibatis.r2dbc.support.session;
 
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.reactive.support.ReactiveConfiguration;
-import org.apache.ibatis.reactive.support.executor.support.R2dbcStatementLog;
 
 import java.util.Collections;
 import java.util.HashMap;
