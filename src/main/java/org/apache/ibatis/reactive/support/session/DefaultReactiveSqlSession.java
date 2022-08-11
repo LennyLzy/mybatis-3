@@ -39,12 +39,12 @@ public class DefaultReactiveSqlSession implements ReactiveSqlSession, MybatisRea
   private boolean withTransaction = false;
 
 
-  public DefaultReactiveSqlSession(ReactiveConfiguration configuration, IsolationLevel isolationLevel, Boolean autoCommit) {
+  public DefaultReactiveSqlSession(ReactiveConfiguration configuration, IsolationLevel isolationLevel, Boolean autoCommit, ReactiveExecutor executor) {
     this.configuration = configuration;
     this.isolationLevel = isolationLevel;
     this.autoCommit = autoCommit;
     this.withTransaction = !autoCommit;
-    this.executor = new DefaultReactiveExecutor(configuration, isolationLevel, autoCommit);
+    this.executor = executor;
   }
 
   @Override

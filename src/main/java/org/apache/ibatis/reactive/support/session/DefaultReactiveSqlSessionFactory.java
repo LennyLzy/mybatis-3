@@ -18,6 +18,8 @@ package org.apache.ibatis.reactive.support.session;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.IsolationLevel;
 import org.apache.ibatis.reactive.support.ReactiveConfiguration;
+import org.apache.ibatis.reactive.support.executor.DefaultReactiveExecutor;
+import org.apache.ibatis.reactive.support.executor.ReactiveExecutor;
 
 public class DefaultReactiveSqlSessionFactory implements ReactiveSqlSessionFactory {
 
@@ -42,7 +44,8 @@ public class DefaultReactiveSqlSessionFactory implements ReactiveSqlSessionFacto
 
   @Override
   public ReactiveSqlSession openSession(IsolationLevel isolationLevel, Boolean autoCommit) {
-    return new DefaultReactiveSqlSession(configuration, isolationLevel, autoCommit);
+    ReactiveExecutor executor = new DefaultReactiveExecutor(configuration, isolationLevel, autoCommit);
+    return new DefaultReactiveSqlSession(configuration, isolationLevel, autoCommit, executor);
   }
 
   @Override

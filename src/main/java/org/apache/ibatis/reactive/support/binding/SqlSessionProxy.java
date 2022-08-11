@@ -15,14 +15,11 @@
  */
 package org.apache.ibatis.reactive.support.binding;
 
-import org.apache.ibatis.reactive.support.ReactiveConfiguration;
 import org.apache.ibatis.reactive.support.session.ReactiveSqlSession;
 import org.apache.ibatis.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 
 public class SqlSessionProxy implements InvocationHandler {
 
